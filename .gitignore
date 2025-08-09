@@ -1,4 +1,32 @@
+# File: .gitignore
+# This file tells Git which files and folders to ignore.
+
+# Dependencies
 /node_modules
+
+# Build output from SWC
 /dist
+
+# Environment variables file (NEVER commit this)
 .env
+
+# Log files
 *.log
+```
+
+---
+
+```
+# File: .env
+# Environment variables for the application.
+# Create this file in the root directory, but do not commit it to Git.
+
+# Server Configuration
+PORT=3000
+NODE_ENV=development
+
+# CORS Configuration - The URL of your frontend application
+CLIENT_ORIGIN=http://localhost:5173
+
+# File Paths
+MUSIC_DIRECTORY=./music
