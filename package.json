@@ -1,7 +1,7 @@
 {
   "name": "audio-streaming-ts-swc",
   "version": "1.0.0",
-  "description": "",
+  "description": "A production-ready audio streaming server built with TypeScript and SWC.",
   "homepage": "https://github.com/rohan3004/express-cdn-server#readme",
   "bugs": {
     "url": "https://github.com/rohan3004/express-cdn-server/issues"
@@ -12,16 +12,16 @@
   },
   "license": "MIT",
   "author": "Rohan Chakravarty",
-  "type": "commonjs",
-  "main": "index.js",
-"scripts": {
-  "dev": "nodemon src/index.ts",
-  "build": "swc src -d dist --copy-files",
-  "start": "node dist/index.js",
-  "lint": "eslint . --ext .ts",
-  "test": "echo \"Error: no test specified\" && exit 1"
-},
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "nodemon src/index.ts",
+    "build": "swc src -d dist --copy-files",
+    "start": "node dist/index.js",
+    "lint": "eslint . --ext .ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "dependencies": {
+    "axios": "^1.11.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
@@ -34,6 +34,7 @@
     "@swc/cli": "^0.7.8",
     "@swc/core": "^1.13.3",
     "@swc/helpers": "^0.5.17",
+    "@types/axios": "^0.9.36",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/joi": "^17.2.2",
