@@ -1,69 +1,82 @@
 // File: src/index.ts
-// The final, complete server entry point with dynamic CORS configuration.
+// The final, complete server entry point with the correct middleware order.
 
 import dotenv from 'dotenv';
 dotenv.config();
 
 import express, { Application, Request, Response } from 'express';
 import helmet from 'helmet';
-import cors, { CorsOptions } from 'cors'; // Import CorsOptions type
+import cors, { CorsOptions } from 'cors';
+import path from 'path';
 
 import { rateLimiter } from './config/rateLimiter';
 import { logger, requestLogger } from './config/logger';
 import { errorHandler } from './middleware/errorHandler';
 import streamRoutes from './routes/stream.routes';
 
-// --- Start of CORS Configuration ---
-
-// 1. Get the allowed origins from the .env file and split them into an array.
+// --- CORS Configuration ---
 const allowedOriginsString = process.env.CORS_ALLOWED_ORIGINS || '';
 const allowedOrigins = allowedOriginsString.split(',');
-
-// 2. Define the CORS options.
 const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
-    // The 'origin' is the URL of the frontend making the request.
-    // We check if this origin is in our allowed list.
-    // The `!origin` check allows for server-to-server requests or tools like Postman where origin is undefined.
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      // If allowed, the callback passes `null` for the error and `true` for success.
       callback(null, true);
     } else {
-      // If not allowed, the callback passes an error.
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true, // Allows cookies to be sent
+  credentials: true,
 };
-
-// --- End of CORS Configuration ---
-
 
 const app: Application = express();
 const PORT: number = parseInt(process.env.PORT || '3000', 10);
 
 // === Security & Core Middleware ===
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" }
-}));
+// Updated helmet configuration to set a proper Content Security Policy
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    contentSecurityPolicy: {
+      directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        "script-src": ["'self'", "'unsafe-inline'"], // Allow inline scripts
+        "img-src": ["'self'", "data:", "https://cdn.rohandev.online", "https://rohandev.online", "https:"], // Allow images from specific origins and any https source
+      },
+    },
+  })
+);
+
 app.use(rateLimiter);
-
-// 3. Use the cors middleware with our dynamic options.
 app.use(cors(corsOptions));
-
 app.use(express.json());
-app.use(requestLogger);
 
+// === Static Files Middleware ===
+app.use(express.static(path.join(__dirname, '../public')));
+
+app.use(requestLogger);
 
 // === Routes ===
 app.get('/api', (req: Request, res: Response) => {
   res.status(200).json({ message: 'Audio Streaming API is healthy' });
 });
-
 app.use('/api/stream', streamRoutes);
 
 
-// === Error Handling Middleware ===
+// === Smart 404 Page Middleware ===
+// This now correctly sits before the final error handler.
+app.use((req, res, next) => {
+  if (req.originalUrl.startsWith('/api/')) {
+    res.status(404).json({
+      status: 'fail',
+      message: `Not Found: The requested URL ${req.originalUrl} does not exist on this server.`
+    });
+  } else {
+    res.status(404).sendFile(path.join(__dirname, '../public/404.html'));
+  }
+});
+
+// === Final Error Handling Middleware ===
+// This MUST be the last middleware.
 app.use(errorHandler);
 
 
