@@ -40,6 +40,8 @@ app.use(
         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
         "script-src": ["'self'", "'unsafe-inline'"],
         "img-src": ["'self'", "data:", "https://cdn.rohandev.online", "https://rohandev.online", "https:"],
+        // Add connect-src to allow fetch requests to specific domains
+        "connect-src": ["'self'", "https://api.rohandev.online", "https://api.weatherapi.com", "https://scribe.rohandev.online"],
       },
     },
   })
