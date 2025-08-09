@@ -1,5 +1,5 @@
 // File: src/index.ts
-// The final, complete server entry point with the correct middleware order.
+// The final, complete server entry point with a more robust static path.
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -32,26 +32,26 @@ const app: Application = express();
 const PORT: number = parseInt(process.env.PORT || '3000', 10);
 
 // === Security & Core Middleware ===
-// Updated helmet configuration to set a proper Content Security Policy
 app.use(
   helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" },
     contentSecurityPolicy: {
       directives: {
         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-        "script-src": ["'self'", "'unsafe-inline'"], // Allow inline scripts
-        "img-src": ["'self'", "data:", "https://cdn.rohandev.online", "https://rohandev.online", "https:"], // Allow images from specific origins and any https source
+        "script-src": ["'self'", "'unsafe-inline'"],
+        "img-src": ["'self'", "data:", "https://cdn.rohandev.online", "https://rohandev.online", "https:"],
       },
     },
   })
 );
-
 app.use(rateLimiter);
 app.use(cors(corsOptions));
 app.use(express.json());
 
 // === Static Files Middleware ===
-app.use(express.static(path.join(__dirname, '../public')));
+// This path is now relative to the project root, making it more reliable.
+const publicDirectoryPath = path.join(process.cwd(), 'public');
+app.use(express.static(publicDirectoryPath));
 
 app.use(requestLogger);
 
@@ -63,7 +63,6 @@ app.use('/api/stream', streamRoutes);
 
 
 // === Smart 404 Page Middleware ===
-// This now correctly sits before the final error handler.
 app.use((req, res, next) => {
   if (req.originalUrl.startsWith('/api/')) {
     res.status(404).json({
@@ -71,12 +70,11 @@ app.use((req, res, next) => {
       message: `Not Found: The requested URL ${req.originalUrl} does not exist on this server.`
     });
   } else {
-    res.status(404).sendFile(path.join(__dirname, '../public/404.html'));
+    res.status(404).sendFile(path.join(publicDirectoryPath, '404.html'));
   }
 });
 
 // === Final Error Handling Middleware ===
-// This MUST be the last middleware.
 app.use(errorHandler);
 
 
