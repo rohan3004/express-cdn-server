@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Video } from '../data/mockData';
-import { HeroPlayIcon, AddIcon, InfoIcon } from './Icons';
+import type { Video } from '../data/mockData';
+import { HeroPlayIcon } from './Icons';
 
 const VideoCard = ({ video }: { video: Video }) => (
   <Link to={`/watch?video=${video.id}`} className="flex-shrink-0 w-64 md:w-72 cursor-pointer group">

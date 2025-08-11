@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { VideoPlayer } from '../components/VideoPlayer';
 import { mockContent } from '../data/mockData';
