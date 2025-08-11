@@ -12,7 +12,8 @@ import path from 'path';
 import { rateLimiter } from './config/rateLimiter';
 import { logger, requestLogger } from './config/logger';
 import { errorHandler } from './middleware/errorHandler';
-import streamRoutes from './routes/stream.routes';
+import audioStreamRoutes from './routes/stream.routes'; 
+import videoStreamRoutes from './routes/video.routes';
 
 // --- CORS Configuration ---
 const allowedOriginsString = process.env.CORS_ALLOWED_ORIGINS || '';
@@ -61,7 +62,8 @@ app.use(requestLogger);
 app.get('/api', (req: Request, res: Response) => {
   res.status(200).json({ message: 'Audio Streaming API is healthy' });
 });
-app.use('/api/stream', streamRoutes);
+app.use('/api/stream', audioStreamRoutes);
+app.use('/api/video', videoStreamRoutes);
 
 
 // === Smart 404 Page Middleware ===
