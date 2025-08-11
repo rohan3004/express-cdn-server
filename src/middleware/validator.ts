@@ -25,3 +25,17 @@ export const validateStreamRequest = (req: Request, res: Response, next: NextFun
   // If validation succeeds, proceed to the next middleware (the controller).
   next();
 };
+
+// --- NEW ---
+// Schema for video stream requests
+const videoStreamSchema = Joi.object({
+  videoName: Joi.string().regex(/^[a-zA-Z0-9-_\.]+\.mp4$/).required(),
+});
+
+export const validateVideoRequest = (req: Request, res: Response, next: NextFunction): void => {
+  const { error } = videoStreamSchema.validate(req.params);
+  if (error) {
+    return next(new AppError(`Invalid video name format: ${error.details[0].message}`, 400));
+  }
+  next();
+};

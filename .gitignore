@@ -7,6 +7,9 @@
 # Build output from SWC
 /dist
 
+#Not to include videos as of now
+/videos
+
 # Environment variables file (NEVER commit this)
 .env
 
