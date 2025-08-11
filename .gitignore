@@ -8,7 +8,7 @@
 /dist
 
 #Not to include videos as of now
-/videos
+#/videos
 
 # Environment variables file (NEVER commit this)
 .env
