@@ -30,7 +30,7 @@ export const VideoPlayer = ({ src: videoIdentifier, isHeroPlayer = false }: { sr
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
 
-    const fullVideoSrc = `http://localhost:5500/api/video/${videoIdentifier}`;
+    const fullVideoSrc = `/api/video/${videoIdentifier}`;
     const playbackRates = [0.5, 0.75, 1, 1.25, 1.5, 2];
 
     const updateUrlParams = useCallback(() => {
