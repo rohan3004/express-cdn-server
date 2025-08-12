@@ -47,9 +47,9 @@ app.use(
     },
   })
 );
-app.use(rateLimiter);
-app.use(cors(corsOptions));
-app.use(express.json());
+// app.use(rateLimiter);
+// app.use(cors(corsOptions));
+// app.use(express.json());
 
 // === Static Files Middleware ===
 // This path is now relative to the project root, making it more reliable.
